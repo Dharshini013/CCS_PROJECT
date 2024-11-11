@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Encrypt/Decrypt</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f3f3f3;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+        }
+        input[type="file"] {
+            margin: 15px 0;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            color: white;
+        }
+        #encryptBtn { background-color: #4CAF50; } /* Green */
+        #decryptBtn { background-color: #f44336; } /* Red */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Encrypt / Decrypt File</h2>
+        
+        <!-- File Input -->
+        <input type="file" id="fileInput" />
+
+        <!-- Buttons for Encrypt and Decrypt -->
+        <br>
+        <button id="encryptBtn" onclick="handleFile('encrypt')">Encrypt</button>
+        <button id="decryptBtn" onclick="handleFile('decrypt')">Decrypt</button>
+    </div>
+
+    <script>
+        async function handleFile(action) {
+            const fileInput = document.getElementById('fileInput');
+            if (fileInput.files.length === 0) {
+                alert("Please select a file.");
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("action", action);
+
+            const response = await fetch(`/process`, {
+                method: "POST",
+                body: formData,
+            });
+            
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = action === "encrypt" ? "encrypted_output.bin" : "decrypted_output.txt";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                alert("Error processing the file.");
+            }
+        }
+    </script>
+</body>
+</html>
