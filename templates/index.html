@@ -3,84 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Encrypt/Decrypt</title>
+    <title>File Encryption and Decryption</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f3f3f3;
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
         }
-        .container {
-            text-align: center;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
-        }
-        input[type="file"] {
-            margin: 15px 0;
-        }
-        button {
-            padding: 10px 20px;
-            margin: 10px;
-            font-size: 16px;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-            color: white;
-        }
-        #encryptBtn { background-color: #4CAF50; } /* Green */
-        #decryptBtn { background-color: #f44336; } /* Red */
+
+    .container {
+        text-align: center;
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    input[type="file"] {
+        margin: 20px 0;
+    }
+
+    .buttons button {
+        margin: 5px;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .buttons button:hover {
+        background-color: #0056b3;
+    }
+
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Encrypt / Decrypt File</h2>
-        
-        <!-- File Input -->
-        <input type="file" id="fileInput" />
-
-        <!-- Buttons for Encrypt and Decrypt -->
-        <br>
-        <button id="encryptBtn" onclick="handleFile('encrypt')">Encrypt</button>
-        <button id="decryptBtn" onclick="handleFile('decrypt')">Decrypt</button>
+        <h1>Upload File for Encryption/Decryption</h1>
+        <form action="/process" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" required>
+            <div class="buttons">
+                <button type="submit" name="action" value="encrypt">Encrypt</button>
+                <button type="submit" name="action" value="decrypt">Decrypt</button>
+            </div>
+        </form>
     </div>
-
-    <script>
-        async function handleFile(action) {
-            const fileInput = document.getElementById('fileInput');
-            if (fileInput.files.length === 0) {
-                alert("Please select a file.");
-                return;
-            }
-            
-            const file = fileInput.files[0];
-            const formData = new FormData();
-            formData.append("file", file);
-            formData.append("action", action);
-
-            const response = await fetch(`/process`, {
-                method: "POST",
-                body: formData,
-            });
-            
-            if (response.ok) {
-                const blob = await response.blob();
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement("a");
-                link.href = url;
-                link.download = action === "encrypt" ? "encrypted_output.bin" : "decrypted_output.txt";
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            } else {
-                alert("Error processing the file.");
-            }
-        }
-    </script>
 </body>
 </html>
